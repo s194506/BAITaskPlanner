@@ -1,0 +1,34 @@
+Nasza aplikacja ma na celu znormalizowaæ oraz zorganizowaæ czas pracy. Dodatkowo pozwala na prowadzenie statystyk dotycz¹cych projektów i czasu ich wykonania  zarówno grup projektowych jak i obowi¹zków prywatnych.
+
+ 
+
+U¿ytkownik po za³o¿eniu konta i zalogowaniu  siê do niego bêdzie mia³ mo¿liwoœæ:
+
+-wysy³ania wiadomoœci i odbierania ich
+
+-dodawania g³ównych folderów - w nich bêdzie móg³ zapisywaæ swoje poszczególne zadania - okreœlaæ datê i ustawiaæ przypomnienia do wykonania
+
+-u¿ytkownik bêdzie móg³ mierzyæ czas wykonania poszczególnych zadañ
+
+-bêdzie mia³ mo¿liwoœæ podpiêcia osób do poszczególnych zadañ przy wyznaczaniu ich obowi¹zków
+
+-bêdzie równie¿ móg³ dodawaæ pliki do poszczególnych zadañ  oraz ustawiaæ priorytet zadañ
+
+-w aplikacji bêdzie tak¿e opcja podgl¹du kalendarza w którym bêd¹ wyœwietla³y siê zadania w konkretnych dniach
+
+
+
+
+Sk³ad grupy:
+
+Matsiushyn Dzianis 192084
+
+Nicieja Rados³aw 194086
+
+Roganowicz Kamil 194506
+
+Shtunder Dmytro 182456
+
+ 
+
+Grupa dziekañska: WZISS2-1211
