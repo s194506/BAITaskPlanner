@@ -1,25 +1,28 @@
 import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import MainPage from './MainPage';
+import LoginPage from './LoginPage';
+import SignUpPage from './SignUpPage';
+import FolderListPage from './FolderListPage';
+import FolderViewPage from './FolderViewPage';
+import ChatPage from './ChatPage';
 
 export default class App extends React.Component {
-  render() {
-    const divstyle = {
-      width:'100vw',
-      height:'100vh',
-      background:'linear-gradient(to top, #19293a, #061926)', 
-      color:'#eee', 
-      fontFamily:'Verdana, Geneva, sans-serif', 
-      display:'flex', 
-      alignItems:'center',
-      justifyContent:'center',
-      textAlign:'center',
-      fontSize:'3rem',
-      padding:'15px'
-    };
 
+
+
+  render() {
+
+    // Switch chooses one of the pages to show 
     return (
-      <div style={divstyle}>
-        <span>Now you can use <b>cordova</b> apis inside <b>React</b>!</span>
-      </div>      
+      <Switch>
+        <Route exact path='/' component={MainPage}/>
+        <Route path='/login' component={LoginPage}/>
+        <Route path='/signup' component={SignUpPage}/>
+        <Route path='/folders/:folderId/chat' component={ChatPage}/>
+        <Route path='/folders/:folderId' component={FolderViewPage}/>
+        <Route path='/folders' component={FolderListPage}/>
+      </Switch>      
     );
   }
 }

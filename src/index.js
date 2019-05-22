@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { HashRouter } from 'react-router-dom';
 import App from './App';
 
 // loading cordova.js for specific platform (only when dev)
@@ -13,8 +14,11 @@ document.addEventListener('deviceready', startApp);
 
 // mount the app in <div id="root"/>
 function startApp() {
+  // only HashRouter works with cordova, BrowserRouter does not
   ReactDOM.render((
-    <App/>
+    <HashRouter>
+      <App/>
+    </HashRouter>
   ), document.getElementById('root'));
 }
 
