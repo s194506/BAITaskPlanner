@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import firebase from 'firebase';
 
 var folderExample = {
   id: 5467,
@@ -28,10 +29,20 @@ export default class FolderListPage extends React.Component {
   }
 
   render() {
+    const currentUser = firebase.auth().currentUser;
+
+    console.log('currentUser.providerData',currentUser && currentUser.providerData)
+
     return (
       <div>
         <div style={{background:'grey', padding:'5px'}}>
-          <span>Say my name</span>
+          <span>
+          {
+            currentUser 
+            ? `${currentUser.displayName} (${currentUser.providerData[0].providerId}) (${currentUser.uid})`
+            : 'Not authorized!'
+          }
+          </span>
         </div>
         <div>
           {

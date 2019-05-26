@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
+import firebase from 'firebase';
 
 // loading cordova.js for specific platform (only when dev)
 if (process.env.NODE_ENV === 'development') {
@@ -14,6 +15,19 @@ document.addEventListener('deviceready', startApp);
 
 // mount the app in <div id="root"/>
 function startApp() {
+  var firebaseConfig = {
+    apiKey: "AIzaSyDshipfidHOJfkws_TwlTVmATnVMdp0Blw",
+    authDomain: "taskplanner-62e04.firebaseapp.com",
+    databaseURL: "https://taskplanner-62e04.firebaseio.com",
+    projectId: "taskplanner-62e04",
+    storageBucket: "taskplanner-62e04.appspot.com",
+    messagingSenderId: "891181347622",
+    appId: "1:891181347622:web:ec82ef9d11549ef8"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  window.firebase = firebase;
+
   // only HashRouter works with cordova, BrowserRouter does not
   ReactDOM.render((
     <HashRouter>
