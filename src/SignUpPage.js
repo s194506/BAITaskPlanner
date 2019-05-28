@@ -9,11 +9,11 @@ export default class SignUpPage extends React.Component {
     error: ''
   }
   
+  
 
   onSignUpByEmail(e) {
     e.preventDefault();
 
-    var name = this.refs['nameInput'].value;
     var email = this.refs['emailInput'].value;
     var password = this.refs['passwordInput'].value;
     var repeatPassword = this.refs['repeatPasswordInput'].value;
@@ -21,17 +21,6 @@ export default class SignUpPage extends React.Component {
     this.setState({isFetching:true, error:''});
     firebase.auth().createUserWithEmailAndPassword(email, password)
     .then((userCredentials) => {
-      var newUser = userCredentials.user;
-      newUser.updateProfile({ displayName: name })
-
-      // now when we registered user in auth, add a record in firestore
-      firebase.firestore().collection('users').doc(newUser.uid).set({
-        uid: newUser.uid,
-        displayName: name,
-        email: newUser.email,
-        photoURL: newUser.photoURL,
-      })
-
       this.setState({isFetching:false, error: ''})
     }).catch(e => {
       console.error(e);
@@ -39,43 +28,7 @@ export default class SignUpPage extends React.Component {
     });
   }
 
-  googleClick() {
-    var googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-    this.setState({isFetching:true, error:''});
-    firebase.auth().signInWithRedirect(googleAuthProvider).then((userCredentials) => {
-      var newUser = userCredentials.user;
-      // now when we registered user in auth, add a record in firestore
-      firebase.firestore().collection('users').doc(newUser.uid).set({
-        uid: newUser.uid,
-        displayName: newUser.displayName,
-        email: newUser.email,
-        photoURL: newUser.photoURL,
-      })
-      this.setState({isFetching:false, error:''})
-    }).catch((error) => {
-      console.log('redirect result fail prom')
-      this.setState({isFetching:false, error:error.message})
-    });
-  }
-
-  facebookClick() {    
-    var facebookAuthProvider = new firebase.auth.FacebookAuthProvider();
-    this.setState({isFetching:true, error:''});
-    firebase.auth().signInWithRedirect(facebookAuthProvider).then((userCredentials) => {
-      var newUser = userCredentials.user;
-      // now when we registered user in auth, add a record in firestore
-      firebase.firestore().collection('users').doc(newUser.uid).set({
-        uid: newUser.uid,
-        displayName: newUser.displayName,
-        email: newUser.email,
-        photoURL: newUser.photoURL,
-      })
-      this.setState({isFetching:false, error:''})
-    }).catch((error) => {
-      console.log('redirect result fail prom')
-      this.setState({isFetching:false, error:error.message+' prom'})
-    });
-  }
+  
 
   signout() {
     firebase.auth().signOut()
@@ -92,9 +45,7 @@ export default class SignUpPage extends React.Component {
         <h1>Sign Up</h1>
         <br/>
         <form onSubmit={this.onSignUpByEmail.bind(this)}>
-          Name: <input ref='nameInput'/>
-          <br/>
-          Login: <input ref='emailInput'/>
+          Email: <input ref='emailInput'/>
           <br/>
           Password: <input type='password' ref='passwordInput'/>
           <br/>
@@ -103,10 +54,6 @@ export default class SignUpPage extends React.Component {
           <button>sign up</button>
         </form>
 
-        <div>OR</div>
-
-        <button onClick={this.facebookClick.bind(this)}>Sign up with Facebook</button>
-        <button onClick={this.googleClick.bind(this)}>Sign up with Google</button>
 
         {
           this.state.isFetching && <div>Waiting...</div>
@@ -124,7 +71,6 @@ export default class SignUpPage extends React.Component {
               <button onClick={this.signout.bind(this)}>Sign out</button>
             </div>
           )
-
         }
       </div>
     )
