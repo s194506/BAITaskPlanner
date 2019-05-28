@@ -1,60 +1,50 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import firebase from 'firebase';
+import { Link, withRouter } from 'react-router-dom';
 
-export default class ChatPage extends React.Component {
+export default withRouter(class ChatPage extends React.Component {
 
   state = {
-    currentUser: {id:12},
-    usersById: {
-      '434': {
-        id:434,
-        displayName:'Hooker',
-        avatar: 'https://i.ytimg.com/vi/f45jPEkTf2M/hqdefault.jpg'
-      },
-      '12': {
-        id:12,
-        displayName:'Fat Bastard',
-        avatar: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/73/Fat_bastard.jpeg/220px-Fat_bastard.jpeg'
+    isFetching: false,
+    error:'',
+
+    usersById: {},
+    messages: []
+  }
+
+  realtimeUnsubscribe = null
+
+  componentDidMount() {
+    this.setState({isFetching:true, error:''});
+    firebase.firestore().collection('users').get().then(result => {
+      var users = result.docs.map(docSnapshot => docSnapshot.data());
+      var usersById = {};
+      users.forEach( user => usersById[user.uid] = user);
+      this.setState({isFetching:false, error:'', usersById: usersById})
+    }).catch( reason => {
+      this.setState({isFetching:false, error:reason.message})
+    })
+
+
+    this.realtimeUnsubscribe = 
+      firebase.firestore().collection('folders/'+this.props.match.params['folderId']+'/messages')
+      .onSnapshot(this.onServerDataUpdated.bind(this));
+
+  }
+
+  componentWillUnmount() {
+    this.realtimeUnsubscribe();
+  }
+
+  onServerDataUpdated(snapshot) {
+    var messages = this.state.messages;
+    snapshot.docChanges().forEach(function(change) {
+      if (change.type === "added") {
+        messages.push(change.doc.data());
       }
-    },
-    messages: [{
-      id:1,
-      userId: 12,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'Hi! How much?'
-    }, {
-      id:2,
-      userId: 434,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'$5/hr'
-    }, {
-      id:3,
-      userId: 12,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'You\'ve got yourself a deal babe!'
-    }, {
-      id:4,
-      userId: 12,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'Wanna see ma dic?'
-    }, {
-      id:5,
-      userId: 434,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'Nah, I\'ve got my own',
-      files: [
-        {
-          id:646,
-          filename:'pic-her-own-dic.jpg',
-          size:46543
-        }
-      ]
-    }, {
-      id:6,
-      userId: 12,
-      creationDate:'2019-05-19T19:04:05+02:00',
-      text:'Aw shiet! NOPE! BYE!!!'
-    } ]
+    });
+    messages = messages.sort((m1,m2) => new Date(m1.creationDate) - new Date(m2.creationDate))
+    this.setState({messages: messages})
   }
 
   sendMessage(e) {
@@ -62,51 +52,39 @@ export default class ChatPage extends React.Component {
     var text = this.refs['newMessageText'].value;
     this.refs['newMessageText'].value = '';
 
-    var messages = this.state.messages;
-    messages.push({
-      id: 123,
-      userId: this.state.currentUser.id,
-      creationDate:'2019-05-19T19:04:05+02:00',
+    this.setState({isFetching: true, error: ''})
+    firebase.firestore().collection('folders/'+this.props.match.params['folderId']+'/messages').doc().set({
+      userId: firebase.auth().currentUser.uid,
+      creationDate: new Date().toISOString(),
       text: text,
-    });
-
-    this.setState({
-      messages: messages
+    }).then(() => {
+      this.setState({isFetching: false, error: ''})
+    }).catch( reason => {
+      this.setState({isFetching: false, error: reason.message})
     })
   }
 
   render() {
     return (
       <div>
-        <Link to={'/folders/'+this.props.folderId}>back to folder</Link>
+        <Link to={'/folders/'+this.props.match.params['folderId']}>back to folder</Link>
         <h1>Chat for folder ??</h1>
         <div style={{width:300}}>
           {
             this.state.messages.map( (message) => {
-              var isCurrentUserMessage = message.userId === this.state.currentUser.id;
+              var isCurrentUserMessage = message.userId === firebase.auth().currentUser.uid;
+              var photoURL = this.state.usersById[message.userId] && this.state.usersById[message.userId].photoURL;
+              var displayName = (this.state.usersById[message.userId] && this.state.usersById[message.userId].displayName) || '';
+              var align = isCurrentUserMessage?'right':'left';
 
               return (
                 <div>
-                  <img style={{float:isCurrentUserMessage?'right':'left'}} width={40} height={40} src={this.state.usersById[message.userId].avatar}/>
-                  <div style={{background:'cyan', marginBottom:'3px'}}>
+                  <img style={{float:align}} width={40} height={40} src={photoURL}/>
+                  <div style={{background:'grey', marginBottom:'3px', textAlign:align}}>
+                    <div style={{fontSize:10, opacity:.5}}>{displayName} {message.creationDate}</div>
                     <div>{message.text}</div>
                     <div style={{clear:'both'}}></div>
-                    {
-                      message.files
-                      && (
-                        <div>
-                          {
-                            message.files.map((file)=>(
-                              <div style={{margin:'6px', background:'lightgreen'}}>
-                                <img height={30} src='https://previews.123rf.com/images/tmricons/tmricons1510/tmricons151000102/45803681-copier-le-fichier-ic%C3%B4ne-dupliquer-la-cote-du-document-.jpg'/>
-                                <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ' target='_blank'> {file.filename} </a>
-                                <span>size: {Math.round(file.size/1024)}kb</span>
-                              </div>
-                            ))
-                          }
-                        </div>
-                      )
-                    }
+                    <div></div>
                   </div>
                 </div>
               )
@@ -115,11 +93,16 @@ export default class ChatPage extends React.Component {
         </div>
         <div>
           <form onSubmit={this.sendMessage.bind(this)}>
-            <input ref='newMessageText'/>
+            <input ref='newMessageText' disabled={this.state.isFetching}/>
             <button>Send</button>
           </form>
+          {
+            this.state.error
+            ? <div>{this.state.error}</div>
+            : false
+          }
         </div>
       </div>
     )
   }
-}
+})
