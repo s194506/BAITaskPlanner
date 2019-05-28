@@ -2,36 +2,50 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
-var folderExample = {
-  id: 5467,
-  name: '5 steps to beat alcoholism',
-  lastModified: '2019-05-19T19:04:05+02:00',
-  creationDate: '2019-05-17T15:04:05+02:00',
-  owner: 6757,
-  collaborators: [13569,4567],
-}
-var folderExample2 = {
-  id: 5467,
-  name: 'Things to forget',
-  lastModified: '2019-05-20T17:04:05+02:00',
-  creationDate: '2019-05-16T15:56:05+02:00',
-  owner: 6757,
-  collaborators: [],
-}
 
 export default class FolderListPage extends React.Component {
   state = {
-    folders: [folderExample, folderExample2]
+    isFetching: false,
+    error: '',
+    folders: []
   }
 
-  onAddClick() {
-    alert('add is not implemented yet');
+  componentDidMount() {
+
+    this.setState({isFetching:true,error:''})
+
+    var currentUserUid = firebase.auth().currentUser.uid;
+    // var currentUserUid='ekCq2eBs4uPK9nZ1F1Oho4n6lG33' // hack, kucherovvv97@gmail.com
+
+    Promise.all([
+      firebase.firestore().collection('folders').where('owner','==',currentUserUid).get(), // own folders
+      firebase.firestore().collection('folders').where('collaborators','array-contains',currentUserUid).get() // collab folders
+    ]).then((results) => {
+      var ownFolders = results[0].docs.map(docSnapshot => {
+        var folder = docSnapshot.data();
+        folder.id = docSnapshot.id;
+        return folder;
+      });
+      var collabFolders = results[1].docs.map(docSnapshot => {
+        var folder = docSnapshot.data();
+        folder.id = docSnapshot.id;
+        return folder;
+      });
+      
+      console.log(ownFolders, collabFolders)
+      this.setState({
+        isFetching:false,
+        error:'',
+        folders:ownFolders.concat(collabFolders)
+      });
+    }).catch((reason) => {
+      this.setState({isFetching:false, error:reason.message})
+    })
   }
 
   render() {
     const currentUser = firebase.auth().currentUser;
-
-    console.log('currentUser.providerData',currentUser && currentUser.providerData)
+    // console.log('currentUser.providerData',currentUser && currentUser.providerData)
 
     return (
       <div>
@@ -46,20 +60,33 @@ export default class FolderListPage extends React.Component {
         </div>
         <div>
           {
+            this.state.folders.length === 0 
+            ? <div>No folders</div>
+            : false
+          }
+          {
             this.state.folders.map( (folder) => {
               return (
                 <div>
                   <img height={40} src='https://cdn1.iconfinder.com/data/icons/education-set-3/512/folder-open-512.png'/>
                   <Link to={'/folders/'+folder.id}>{folder.name}</Link>
-                  <span>{folder.id}</span>
+                  <span>(id:{folder.id})</span>
+                  <Link to={'/folders/'+folder.id+'/edit'}>edit</Link>
                 </div>
               )
             })
           }
         </div>
         <div>
-          <button onClick={this.onAddClick.bind(this)}>+</button>
+          <Link to='/folders/create'>Add folder...</Link>
         </div>
+        {
+          this.state.isFetching
+          ? <div>Wait...</div>
+          : this.state.error
+            ? <div>{this.state.error}</div>
+            : false
+        }
       </div>
     )
   }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
+import firebase from 'firebase';
 
 var currentFolder = {
   id: 5467,
@@ -10,7 +11,7 @@ var currentFolder = {
   collaborators: [13569,4567],
 }
 
-export default class FolderViewPage extends React.Component {
+export default withRouter(class FolderViewPage extends React.Component {
   state = {
     currentFolder: currentFolder,
     showDone: false,
@@ -92,7 +93,7 @@ export default class FolderViewPage extends React.Component {
           <Link to='/folders'>to folders</Link>
           <span>{this.state.currentFolder.id}</span>
           <span>{this.state.currentFolder.name}</span>
-          <Link to={'/folders/'+this.props.folderId+'/chat'}>to chat</Link>
+          <Link to={'/folders/'+this.props.match.params.folderId+'/chat'}>to chat</Link>
         </div>
         <div>
           <form onSubmit={this.onTaskAdd.bind(this)}>
@@ -104,7 +105,7 @@ export default class FolderViewPage extends React.Component {
         <div>
           {
             this.state.tasks.map( (task) => {
-              if (!this.state.showDone && !task.isDone) return false;
+              if (!this.state.showDone && task.isDone) return false;
 
               return (
                 <div style={{background:'grey', border:'1px solid black'}}>
@@ -124,4 +125,4 @@ export default class FolderViewPage extends React.Component {
       </div>
     )
   }
-}
+})
