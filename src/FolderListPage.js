@@ -2,36 +2,62 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
-var folderExample = {
-  id: 5467,
-  name: '5 steps to beat alcoholism',
-  lastModified: '2019-05-19T19:04:05+02:00',
-  creationDate: '2019-05-17T15:04:05+02:00',
-  owner: 6757,
-  collaborators: [13569,4567],
-}
-var folderExample2 = {
-  id: 5467,
-  name: 'Things to forget',
-  lastModified: '2019-05-20T17:04:05+02:00',
-  creationDate: '2019-05-16T15:56:05+02:00',
-  owner: 6757,
-  collaborators: [],
-}
 
 export default class FolderListPage extends React.Component {
   state = {
-    folders: [folderExample, folderExample2]
+    isFetching: false,
+    error: '',
+    folders: []
   }
 
-  onAddClick() {
-    alert('add is not implemented yet');
+  realtimeUnsibscribeOwn = null
+  realtimeUnsibscribeCollab = null
+
+  componentWillUnmount() {
+    this.realtimeUnsibscribeOwn()
+    this.realtimeUnsibscribeCollab()
+  }
+
+  componentDidMount() {
+    var currentUserUid = firebase.auth().currentUser.uid;
+
+    this.realtimeUnsibscribeOwn = firebase.firestore().collection('folders')
+    .where('owner','==',currentUserUid).onSnapshot(this.onFoldersSnapshot.bind(this))
+
+    this.realtimeUnsibscribeCollab = firebase.firestore().collection('folders')
+    .where('collaborators','array-contains',currentUserUid).onSnapshot(this.onFoldersSnapshot.bind(this))
+  }
+
+  onFoldersSnapshot(next) {
+    var folders = this.state.folders;
+    
+    var changes = next.docChanges();
+    for (var i = 0; i < changes.length; i++) {
+      switch (changes[i].type) {
+        case 'added':
+          var newFolder = changes[i].doc.data();
+          newFolder.id = changes[i].doc.id;
+          folders.push(newFolder);
+        break;
+        case 'modified':
+          var modifiedFolder = changes[i].doc.data();
+          modifiedFolder.id = changes[i].doc.id;
+          var folderIndex = folders.findIndex(folder => folder.id === changes[i].doc.id);
+          folders[folderIndex] = modifiedFolder;
+        break;
+        case 'removed':
+          var folderIndex = folders.findIndex(folder => folder.id === changes[i].doc.id);
+          folders.splice(folderIndex, 1);
+        break;
+      }
+    }
+
+    this.setState({folders: folders});
   }
 
   render() {
     const currentUser = firebase.auth().currentUser;
-
-    console.log('currentUser.providerData',currentUser && currentUser.providerData)
+    // console.log('currentUser.providerData',currentUser && currentUser.providerData)
 
     return (
       <div>
@@ -46,20 +72,38 @@ export default class FolderListPage extends React.Component {
         </div>
         <div>
           {
+            this.state.folders.length === 0 
+            ? <div>No folders</div>
+            : false
+          }
+          {
             this.state.folders.map( (folder) => {
               return (
                 <div>
                   <img height={40} src='https://cdn1.iconfinder.com/data/icons/education-set-3/512/folder-open-512.png'/>
-                  <Link to={'/folders/'+folder.id}>{folder.name}</Link>
-                  <span>{folder.id}</span>
+                  <Link to={'/folders/'+folder.id+'/tasks'}>{folder.name}</Link>
+                  <span>(id:{folder.id})</span>
+                  <Link to={'/folders/'+folder.id+'/edit'}>edit</Link>
+                  {
+                    folder.owner !== currentUser.uid
+                    ? <span>(collab)</span>
+                    : false
+                  }
                 </div>
               )
             })
           }
         </div>
         <div>
-          <button onClick={this.onAddClick.bind(this)}>+</button>
+          <Link to='/folders/create'>Add folder...</Link>
         </div>
+        {
+          this.state.isFetching
+          ? <div>Wait...</div>
+          : this.state.error
+            ? <div>{this.state.error}</div>
+            : false
+        }
       </div>
     )
   }
