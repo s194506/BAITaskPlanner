@@ -1,4 +1,3 @@
-## Witryna internetowa projektu
 
 > Nasza aplikacja ma na celu znormalizować oraz zorganizować czas pracy. Dodatkowo pozwala na prowadzenie statystyk dotyczących projektów i czasu ich wykonania  zarówno grup projektowych jak i obowiązków prywatnych.
 
