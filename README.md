@@ -1,1 +1,1 @@
-Link do witryny internetowej projektu: den0702.github.io
+[Link do witryny internetowej projektu](den0702.github.io)
