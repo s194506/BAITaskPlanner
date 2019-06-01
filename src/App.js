@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import MainPage from './MainPage';
 import SignInPage from './SignInPage';
 import SignUpPage from './SignUpPage';
@@ -22,18 +22,27 @@ export default class App extends React.Component {
 
   render() {
 
-    // Switch chooses one of the pages to show 
-    return (
-      <Switch>
-        <Route exact path='/' component={MainPage}/>
-        <Route path='/signin' component={SignInPage}/>
-        <Route path='/signup' component={SignUpPage}/>
-        <Route path='/folders/create' component={CreateFolderPage}/>
-        <Route path='/folders/:folderId/chat' component={ChatPage}/>
-        <Route path='/folders/:folderId/edit' component={EditFolderPage}/>
-        <Route path='/folders/:folderId/tasks' component={FolderViewPage}/>
-        <Route path='/folders' component={FolderListPage}/>
-      </Switch>      
-    );
+    //
+    if (!firebase.auth().currentUser) {
+      return (
+        <Switch>
+          <Route path='/signin' component={SignInPage}/>
+          <Route path='/signup' component={SignUpPage}/>
+          <Redirect to='/signin'/>
+        </Switch>   
+      )
+    } else {
+      return (
+        <Switch>
+          <Route path='/folders/create' component={CreateFolderPage}/>
+          <Route path='/folders/:folderId/chat' component={ChatPage}/>
+          <Route path='/folders/:folderId/edit' component={EditFolderPage}/>
+          <Route path='/folders/:folderId/tasks' component={FolderViewPage}/>
+          <Route path='/folders' component={FolderListPage}/>
+          <Redirect to='/folders'/>
+        </Switch>
+      )
+    }
+
   }
 }

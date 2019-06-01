@@ -55,6 +55,11 @@ export default class FolderListPage extends React.Component {
     this.setState({folders: folders});
   }
 
+  
+  signout() {
+    firebase.auth().signOut()
+  }
+
   render() {
     const currentUser = firebase.auth().currentUser;
     // console.log('currentUser.providerData',currentUser && currentUser.providerData)
@@ -63,6 +68,7 @@ export default class FolderListPage extends React.Component {
       <div>
         <div style={{background:'grey', padding:'5px'}}>
           <span>
+            <button onClick={this.signout}>Sign out</button>
           {
             currentUser 
             ? `${currentUser.displayName} (${currentUser.providerData[0].providerId}) (${currentUser.uid})`
