@@ -19,7 +19,10 @@
 
 ### Technologie użyte przy tworzeniu aplikacji: 
 # [React](https://reactjs.org) [![React](https://d2eip9sf3oo6c2.cloudfront.net/tags/images/000/000/026/square_256/react.png)](https://reactjs.org)
+# [Bootstrap](https://getbootstrap.com)[![Bootstrap](https://cdn.iconscout.com/icon/free/png-256/bootstrap-226077.png)](https://getbootstrap.com)
+# [Firebase](https://firebase.google.com/?gclid=EAIaIQobChMIivKru57J4gIVjg8YCh1nvgkAEAAYASAAEgJl9vD_BwE)[![Firebase](https://firebaseopensource.com/logo-small.png)](https://firebase.google.com/?gclid=EAIaIQobChMIivKru57J4gIVjg8YCh1nvgkAEAAYASAAEgJl9vD_BwE)
 # [Apache Cordova](https://cordova.apache.org) [![Apache Cordova](https://pbs.twimg.com/profile_images/1769287743/cordova_256.png)](https://cordova.apache.org)
+
 
 ### Narzędzia użyte do zarządzania projektem: [Trello](https://trello.com/b/AFdwetRw/taskplaner-lista-zadań), [Github](https://github.com/s194506/BAITaskPlanner/projects/1)
 ### Prototyp aplikacji: <https://marvelapp.com/bg953ib/screen/56921859>
