@@ -29,26 +29,23 @@ export default class UserToggler extends React.Component {
     if (this.state.error) return <div>{this.state.error}</div>;
 
     return (
-      <div>
+      <ul className='list-group'>
         {
           this.state.users.map( user => {
+            var isUserCollaborator = this.props.checkedUsersList.includes(user.uid);
+            var buttonClassName = isUserCollaborator ? 'btn-success' : 'btn-outline-secondary';
+            var buttonText = isUserCollaborator ? 'remove' : 'add';
             return (
-              <div>
-                <span>{user.uid} </span>
-                <span>{user.email} </span>
-                <span>{user.displayName} </span>
-                <button type='button' onClick={this.onToggleButtonClick.bind(this, user.uid)}>
-                  {
-                    this.props.checkedUsersList.includes(user.uid) 
-                    ? 'remove' 
-                    : 'add'
-                  }
+              <li className='list-group-item clearfix'>
+                <button className={'btn btn-sm float-right ml-2 '+buttonClassName} type='button' onClick={this.onToggleButtonClick.bind(this, user.uid)}>
+                  {buttonText}
                 </button>
-              </div>
+                <span>{user.displayName} ({user.email})</span>
+              </li>
             )
           })
         }
-      </div>
+      </ul>
     )
   }
 }

@@ -2,6 +2,13 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 
+import chatSVG from './img/chat.svg';
+import checkedSVG from './img/checked.svg';
+
+
+import starOutlineSVG from './img/star-outline.svg';
+import starFilledSVG from './img/star-filled.svg';
+
 
 export default withRouter(class FolderViewPage extends React.Component {
   state = {
@@ -37,6 +44,7 @@ export default withRouter(class FolderViewPage extends React.Component {
         }
       }
 
+      tasks = tasks.sort( (t1,t2) => t2.isFavorite - t1.isFavorite || new Date(t2.creationDate) - new Date(t1.creationDate))
       this.setState({tasks: tasks});
     })
   }
@@ -50,6 +58,7 @@ export default withRouter(class FolderViewPage extends React.Component {
 
     const text = this.refs['newTaskText'].value;
     const isFavorite = this.refs['newTaskIsFavorite'].checked;
+    if (!text) return;
 
 
     this.setState({isFetching: true, error:''});
@@ -120,45 +129,65 @@ export default withRouter(class FolderViewPage extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>
-          <Link to='/folders'>to folders</Link>
-          <span>{this.props.match.params['folderId']}</span>
-          <Link to={'/folders/'+this.props.match.params.folderId+'/chat'}>to chat</Link>
+      <div className='page'>
+        <div className='top-bar'>
+          <div className="top-bar-left-elements">
+            <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
+          </div>
+          <span className='top-bar-center-elements'>{this.props.match.params['folderId']}</span>
+          <div className="top-bar-right-elements">
+            <Link to={'/folders/'+this.props.match.params.folderId+'/chat'}  className='btn btn-primary'>
+              <img height={20} src={chatSVG}/>
+            </Link>
+          </div>
         </div>
         <div>
           <form onSubmit={this.onTaskAdd.bind(this)}>
-            <button disabled={this.state.isFetching}>+</button>
-            <input ref='newTaskText' disabled={this.state.isFetching}/>
-            <input ref='newTaskIsFavorite' type='checkbox' disabled={this.state.isFetching}/> fav
+            <div className="input-group p-1">
+              <input className='form-control' ref='newTaskText' disabled={this.state.isFetching}/>
+              <div className="input-group-append">
+                <label className='input-group-text'>
+                  <input ref='newTaskIsFavorite' type='checkbox' disabled={this.state.isFetching}/>
+                  star
+                </label>
+              </div>
+              <div className="input-group-append">
+                <button className='btn btn-success text-bold' disabled={this.state.isFetching}><b>+</b></button>
+              </div>
+            </div>
             {
-              this.state.isFetching
-              ? <span>Wait...</span>
-              : this.state.error
-                ? <span>{this.state.error}</span>
-                : false
+              this.state.error
+              ? <div className='text-danger'>{this.state.error}</div>
+              : false
             }
           </form>
         </div>
-        <div>
-          {
-            this.state.tasks.map( (task) => {
-              if (!this.state.showDone && task.isDone) return false;
+        <div className='content'>
+          <ul className='list-unstyled my-list'>
+            {
+              this.state.tasks.map( (task) => {
+                if (!this.state.showDone && task.isDone) return false;
 
-              return (
-                <div style={{background:'grey', border:'1px solid black'}}>
-                  <img onClick={this.toggleTaskDone.bind(this, task.id)} width={30} src={task.isDone ? 'https://banner2.kisspng.com/20180403/ylq/kisspng-computer-icons-checkbox-font-login-button-5ac3a27fc69b76.1599492915227705598135.jpg' : 'http://aux2.iconspalace.com/uploads/unchecked-checkbox-icon-256.png'}/>
-                  <span>{task.text}</span>
-                  <span> ({task.id})</span>
-                  <img onClick={this.toggleTaskFavorite.bind(this, task.id)} width={30} src={task.isFavorite ? 'https://cdn0.iconfinder.com/data/icons/simplicity/512/rate_star_full-256.png' : 'https://cdn2.iconfinder.com/data/icons/picons-essentials/71/star_off-256.png'}/>
-                  <button onClick={this.removeTask.bind(this, task.id)}>remove</button>
-                </div>
-              )
-            })
-          }
+                return (
+                  <li className='d-flex flex-row align-items-center'>
+                    <input className='mr-3' type='checkbox' onClick={this.toggleTaskDone.bind(this, task.id)} checked={task.isDone}/>
+                    <span className='list-item-content'>{task.text}</span>
+                    <img 
+                      className='align-self-right'
+                      onClick={this.toggleTaskFavorite.bind(this, task.id)} 
+                      width={30} 
+                      src={task.isFavorite ? starFilledSVG : starOutlineSVG}
+                      />
+                  </li>
+                )
+              })
+            }
+          </ul>
+
         </div>
-        <div>
-          <button onClick={()=>this.setState({showDone: !this.state.showDone})}>
+        
+        <div className='px-1'>
+          <button className='btn btn-sm btn-block btn-outline-secondary my-1 ' onClick={()=>this.setState({showDone: !this.state.showDone})}>
             {this.state.showDone ? 'Hide done' : 'Show done'}
           </button>
         </div>

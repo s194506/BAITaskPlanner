@@ -11,18 +11,26 @@ import firebase from 'firebase';
 import EditFolderPage from './EditFolderPage';
 
 export default class App extends React.Component {
+  state = { 
+    isAuthReady: false 
+  }
 
   componentDidMount() {
-
     firebase.auth().onAuthStateChanged(() => {
+      if (!this.state.isAuthReady) {
+        this.setState({isAuthReady:true})
+      }
+
       this.forceUpdate();
     });
   }
 
 
   render() {
+    // gotta wait until firebase calls onAuthStateChanged the first time
+    // until then dont render any app pages
+    if (!this.state.isAuthReady) return <div className='text-center py-5 text-secondary'>Wait a sec...</div>
 
-    //
     if (!firebase.auth().currentUser) {
       return (
         <Switch>

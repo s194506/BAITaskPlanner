@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { Link, withRouter } from 'react-router-dom';
 
+import cameraSVG from './img/camera.svg';
+
 export default withRouter(class ChatPage extends React.Component {
 
   state = {
@@ -43,8 +45,9 @@ export default withRouter(class ChatPage extends React.Component {
       }
     });
     messages = messages.sort((m1,m2) => new Date(m1.creationDate) - new Date(m2.creationDate))
-    this.setState({messages: messages})
+    this.setState({messages: messages});
   }
+
 
   sendMessage(e) {
     e.preventDefault();
@@ -104,48 +107,62 @@ export default withRouter(class ChatPage extends React.Component {
 
   }
 
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    this.refs['messages-div'].scrollTo(0,1e10);
+  }
+
   render() {
     var folderId = this.props.match.params['folderId'];
 
     return (
-      <div>
-        <Link to={'/folders/'+folderId+'/tasks'}>back to folder</Link>
-        <h1>Chat for folder ??</h1>
-        <div style={{width:300}}>
+      <div className='page'>
+        <div className='top-bar'>
+          <div className='top-bar-left-elements'>
+            <Link className='btn btn-outline-light' to={'/folders/'+folderId+'/tasks'}>{'<'}</Link>
+          </div>
+          <div className='top-bar-center-elements'>
+            Chat for folder ??
+          </div>
+        </div>
+        
+        <div className='content' ref='messages-div'>
           {
             this.state.messages.map( (message) => {
               var isCurrentUserMessage = message.userId === firebase.auth().currentUser.uid;
               var photoURL = this.state.usersById[message.userId] && this.state.usersById[message.userId].photoURL;
               var displayName = (this.state.usersById[message.userId] && this.state.usersById[message.userId].displayName) || '';
-              var align = isCurrentUserMessage?'right':'left';
-              var color = isCurrentUserMessage?'lime':'lightblue';
+              var wrapperClassName = isCurrentUserMessage?'ml-5 own-message':'mr-5 others-message';
+              var avatarClassName = isCurrentUserMessage?'ml-2 float-right':'mr-2 float-left';
+              var contentClassName = isCurrentUserMessage?' text-right':' text-left';
+              var attachmentsClassName = isCurrentUserMessage?' own-attachments':' others-attachments';
 
               return (
-                <div>
-                  <img style={{float:align}} width={40} height={40} src={photoURL}/>
-                  <div style={{background:color, marginBottom:'3px', textAlign:align}}>
-                    <div style={{fontSize:10, opacity:.5}}>{displayName} {message.creationDate}</div>
+                <div className={'mb-3 rounded overflow-hidden '+wrapperClassName}>
+                  <img className={'border-0 bg-secondary '+avatarClassName} width={40} height={40} src={photoURL}/>
+                  <div className={'clearfix  '+contentClassName}>
+                    <div className='text-muted small' style={{fontSize:10}}>{displayName}</div>
                     <div>{message.text}</div>
-                    <div style={{clear:'both'}}></div>
-                    <div></div>
-                    {
-                      message.attachedImages
+                    
+                  </div>
+                  {
+                      message.attachedImages && message.attachedImages.length > 0
                       && (
-                        <div>
+                        <div className={'p-1'+attachmentsClassName}>
+                          <div className='text-muted small' style={{fontSize:10}}>attachments</div>
                           {
                             message.attachedImages.map((imageUrl)=> {
                               return (
-                                <div style={{margin:'6px', background:'lightgreen'}}>
-                                  <img height={30} src={imageUrl}/>
-                                  <a href={imageUrl} target='_blank'> view </a>
-                                </div>
+                                <a className=' mx-1' href={imageUrl}><img height={30} src={imageUrl}/></a>
                               )
                             })
                           }
                         </div>
                       )
                     }
-                  </div>
                 </div>
               )
             })
@@ -153,20 +170,28 @@ export default withRouter(class ChatPage extends React.Component {
         </div>
         <div>
           <form onSubmit={this.sendMessage.bind(this)}>
-            <input ref='newMessageText' disabled={this.state.isFetching}/>
-            <button disabled={this.state.isFetching}>Send</button>
-            <button type='button' onClick={this.onTakePhotoClick.bind(this)} disabled={this.state.isFetching}>Take photo</button>
+            <div className="input-group">
+              <div className="input-group-prepend">
+                <button className='btn btn-warning btn-sm rounded-0' type='button' onClick={this.onTakePhotoClick.bind(this)} disabled={this.state.isFetching}>
+                  <img src={cameraSVG} height={25}/>
+                </button>
+              </div>
+              <input className='form-control' ref='newMessageText' disabled={this.state.isFetching}/>
+              <div className="input-group-append">
+                <button className='btn btn-primary btn-sm rounded-0' disabled={this.state.isFetching}>Send</button>
+              </div>
+            </div>
           </form>
           <div>
             {
               this.state.imagesToSend.map( (imageToSend) => {
-                return <img height={50} src={imageToSend}/>
+                return <img className='mx-1' height={50} src={imageToSend}/>
               })
             }
           </div>
           {
             this.state.error
-            ? <div>{this.state.error}</div>
+            ? <div className='text-danger'>{this.state.error}</div>
             : false
           }
         </div>

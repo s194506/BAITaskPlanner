@@ -62,50 +62,50 @@ export default class SignInPage extends React.Component {
     });
   }
 
-
-  signout() {
-    firebase.auth().signOut()
-  }
-
   render() {
     return (
-      <div>
-        <Link to='/'>to main</Link>
-        <br/>
-        <Link to='/signup'>sign up instead</Link>
-        <br/>
-        <form onSubmit={this.onFormSubmit.bind(this)}>
-          Email: <input ref='emailInput'/>
+      <div className='page'>
+        <div class="top-bar h4">
+          Sign In
+        </div>
+        <div class="content">
           <br/>
-          Password: <input type='password' ref='passwordInput'/>
-          <br/>
-          <button>sign in</button>
-          {
-            this.state.isFetching
-            ? <span>wait just a sec...</span>
-            : false
-          }
-          {
-            this.state.error
-            ? <span>Error: {this.state.error}</span>
-            : false
-          }
-        </form>
-
-        <div>OR</div>
-
-        <button onClick={this.facebookClick.bind(this)}>Sign in with Facebook</button>
-        <button onClick={this.googleClick.bind(this)}>Sign in with Google</button>
-        
-        {
-          firebase.auth().currentUser 
-          ? <div>
-              <div>Authorized: {firebase.auth().currentUser.displayName} ({firebase.auth().currentUser.providerData[0].providerId})</div>
-              <Link to='/folders'>to folders</Link>
-              <button onClick={this.signout.bind(this)}>Sign out</button>
+          <form className='mb-5' onSubmit={this.onFormSubmit.bind(this)}>
+            <div class="form-group">
+              <label for="">Email: </label>
+              <input className='form-control' ref='emailInput'/>
             </div>
-          : false
-        }
+            
+            <div class="form-group">
+              <label for="">Password: </label>
+              <input className='form-control' type='password' ref='passwordInput'/>
+            </div>
+            
+            <div class="form-group">
+              <button className='btn btn-primary btn-block'>Sign In</button>
+            </div>
+            {
+              this.state.isFetching
+              ? <span>Waiting...</span>
+              : false
+            }
+            {
+              this.state.error
+              ? <div className='text-danger'>Error: {this.state.error}</div>
+              : false
+            }
+          </form>
+  
+          <div class="btn-group-vertical btn-block">
+            <button className='btn btn-primary' onClick={this.facebookClick.bind(this)}>Sign in with Facebook</button>
+            <button className='btn btn-danger' onClick={this.googleClick.bind(this)}>Sign in with Google</button>
+          </div>
+  
+          <div className='text-center py-2'>OR</div>
+          
+          <Link to='/signup' className='btn btn-block btn-outline-secondary'>Register new account</Link>
+
+        </div>
       </div>
     )
   }

@@ -60,29 +60,48 @@ export default withRouter(class EditFolderPage extends React.Component {
     if (this.state.doRedirect) return <Redirect to='/folders'/>
 
     return (
-      <div>
-        {
-          this.state.folder
-          && 
-          <div>
-            <h3>Editing folder {this.state.folder.id}</h3>
-            <form onSubmit={this.onSubmit.bind(this)}>
-              Folder name <input ref='folderNameInput' defaultValue={this.state.folder.name}/>
-              <br/>
-              <UserToggler userFilterCallback={(user)=>user.uid !== this.state.folder.owner} checkedUsersList={this.state.folder.collaborators} onToggle={this.onUserToggle.bind(this)}/>
-              <br/>
-              <button>Save</button>
-            </form>
+      <div className='page'>
+        <div className='top-bar'>
+          <div className="top-bar-left-elements">
+            <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
           </div>
-        }
+          <span className='top-bar-center-elements'>Edit {this.props.match.params['folderId']}</span>
+        </div>
+
+        <div className='content'>
+          {
+            this.state.folder
+            && 
+            <form onSubmit={this.onSubmit.bind(this)}>
+              <div className="form-group">
+                <label for="">Folder name:</label>
+                <input className='form-control' ref='folderNameInput' defaultValue={this.state.folder.name}/>
+              </div>
+              <div className="form-group">
+                <label for="">Collaborators:</label>
+                <UserToggler 
+                  userFilterCallback={(user)=>user.uid !== this.state.folder.owner} 
+                  checkedUsersList={this.state.folder.collaborators} 
+                  onToggle={this.onUserToggle.bind(this)}
+                  />
+              </div>
+              
+              <div className="form-group">
+                <button className='btn btn-block btn-primary'>Save</button>
+              </div>
+            </form>
+          }
+          
+          {
+            this.state.isFetching
+            ? <div>Wait...</div>
+            : this.state.error
+              ? <div>{this.state.error}</div>
+              : false
+          }
+        </div>
         
-        {
-          this.state.isFetching
-          ? <div>Wait...</div>
-          : this.state.error
-            ? <div>{this.state.error}</div>
-            : false
-        }
+        
       </div>
     )
   }

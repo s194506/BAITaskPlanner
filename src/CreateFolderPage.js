@@ -41,19 +41,30 @@ export default class CreateFolderPage extends React.Component {
     if (this.state.doRedirect) return <Redirect to='/folders'/>
 
     return (
-      <div>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          Folder name <input ref='folderNameInput'/>
-          <br/>
-          <button>Create</button>
-        </form>
-        {
-          this.state.isFetching
-          ? <div>Wait...</div>
-          : this.state.error
-            ? <div>{this.state.error}</div>
-            : false
-        }
+      <div className='page'>
+        <div class="top-bar">
+          Create a new folder
+        </div>
+        <div class="content">
+          <form onSubmit={this.onSubmit.bind(this)}>
+            <div className="form-group">
+              <label for="">Folder name:</label>
+              <input className='form-control' ref='folderNameInput'/>
+            </div>
+            
+            <div className="form-group ">
+              <button className='btn btn-block btn-primary'>Create</button>
+            </div>
+            {
+            this.state.isFetching
+            ? <div>Wait...</div>
+            : this.state.error
+              ? <div className='text-danger'>{this.state.error}</div>
+              : false
+          }
+          </form>
+          
+        </div>
       </div>
     )
   }

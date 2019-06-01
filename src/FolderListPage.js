@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
+import plusSVG from './img/plus.svg';
+import folderSVG from './img/folder.svg';
 
 export default class FolderListPage extends React.Component {
   state = {
@@ -65,51 +67,56 @@ export default class FolderListPage extends React.Component {
     // console.log('currentUser.providerData',currentUser && currentUser.providerData)
 
     return (
-      <div>
-        <div style={{background:'grey', padding:'5px'}}>
-          <span>
-            <button onClick={this.signout}>Sign out</button>
-          {
-            currentUser 
-            ? `${currentUser.displayName} (${currentUser.providerData[0].providerId}) (${currentUser.uid})`
-            : 'Not authorized!'
-          }
-          </span>
+      <div className='page'>
+        <div className='top-bar'>
+            <div class="top-bar-left-elements">
+              <button className='btn btn-sm btn-outline-light ' onClick={this.signout}>Sign out</button>
+            </div>
+            <div className='top-bar-center-elements'>
+              {
+                currentUser 
+                ? currentUser.displayName || currentUser.email
+                : 'Not authorized!'
+              }
+            </div>
         </div>
-        <div>
+        <div className='content with-bottom-button'>
           {
             this.state.folders.length === 0 
             ? <div>No folders</div>
-            : false
+            : <ul className='list-unstyled my-list'>
+                {
+                  this.state.folders.map( (folder) => {
+                    return (
+                      <li>
+                        <img height={30} src={folderSVG}/>
+                        <div className="list-item-content mx-3">
+                          <Link to={'/folders/'+folder.id+'/tasks'}>{folder.name}</Link>
+                          {
+                            folder.owner !== currentUser.uid
+                            ? <span className='ml-1 text-muted small va-super'>(collab)</span>
+                            : false
+                          }
+                        </div>
+                        <Link className='btn btn-sm btn-outline-secondary float-right' to={'/folders/'+folder.id+'/edit'}>edit</Link>
+                      </li>
+                    )
+                  })
+                }
+              </ul>
           }
+          
           {
-            this.state.folders.map( (folder) => {
-              return (
-                <div>
-                  <img height={40} src='https://cdn1.iconfinder.com/data/icons/education-set-3/512/folder-open-512.png'/>
-                  <Link to={'/folders/'+folder.id+'/tasks'}>{folder.name}</Link>
-                  <span>(id:{folder.id})</span>
-                  <Link to={'/folders/'+folder.id+'/edit'}>edit</Link>
-                  {
-                    folder.owner !== currentUser.uid
-                    ? <span>(collab)</span>
-                    : false
-                  }
-                </div>
-              )
-            })
+            this.state.isFetching
+            ? <div>Wait...</div>
+            : this.state.error
+              ? <div className='text-danger'>{this.state.error}</div>
+              : false
           }
+          <Link className='bottom-circle-button bg-primary' to='/folders/create'>
+            <img height={25} src={plusSVG}/>
+          </Link>
         </div>
-        <div>
-          <Link to='/folders/create'>Add folder...</Link>
-        </div>
-        {
-          this.state.isFetching
-          ? <div>Wait...</div>
-          : this.state.error
-            ? <div>{this.state.error}</div>
-            : false
-        }
       </div>
     )
   }

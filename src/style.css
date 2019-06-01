@@ -1,4 +1,128 @@
+html, body {
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+* {
+  box-sizing: inherit;
+}
 #root {
   width: 100vw;
   height: 100vh;
+}
+
+.page {
+  width: 100vw;
+  height: 100vh;
+  display:flex;
+  flex-direction: column;
+}
+
+
+.top-bar {
+  height:50px;
+  background:#007bff;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  padding:3px 6px;
+  flex: 0 0 auto;
+  color:white;
+}
+
+
+.top-bar-left-elements {
+  
+}
+
+
+.top-bar-center-elements {
+  flex-grow:1;
+  overflow: hidden visible;
+  overflow-y: auto;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.top-bar-right-elements {
+  text-align: right;
+}
+
+.content {
+  flex-grow:1;
+  position: relative;
+  overflow: hidden auto;
+  padding:6px 12px;
+}
+
+
+.bottom-circle-button {
+  border:0;
+  width: 60px;
+  height:60px;
+  position: fixed;
+  bottom:0;right: 0;left: 0;
+  margin:0 auto 10px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+}
+
+.bottom-circle-button:hover, .bottom-circle-button:active  {
+  text-decoration: unset;
+  color:white;
+}
+
+.with-bottom-button {
+  padding-bottom:60px;
+}
+
+.my-list {
+  padding:0 10px;
+}
+
+.my-list > li {
+  padding:10px 10px;
+  display:flex;
+  align-items: center;
+  
+}
+.my-list > li:not(:last-child) {
+  border-bottom: 1px solid lightgrey;
+}
+
+
+.list-item-content {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+
+
+.checked-button {
+  width:25px;
+  height:25px;
+  border-radius: 100%;
+  border:3px solid #28a745;
+  background: white;
+}
+
+.checked-button-complete {
+  background: #28a745;
+}
+
+
+.own-message {
+  background: rgb(255, 203, 229);
+}
+.own-attachments {
+  background: rgb(255, 181, 218);
+}
+
+.others-message {
+  background: rgb(215, 244, 255);
+}
+.others-attachments {
+  background: rgb(180, 235, 255);
 }

@@ -4,6 +4,9 @@ import { HashRouter } from 'react-router-dom';
 import App from './App';
 import firebase from 'firebase';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './style.css';
+
 // loading cordova.js for specific platform (only when dev)
 if (process.env.NODE_ENV === 'development') {
   const scriptEl = document.createElement('script');
