@@ -18,8 +18,8 @@
 * *podglądu* kalendarza w którym będą wyświetlały się zadania w konkretnych dniach
 
 ### Technologie użyte przy tworzeniu aplikacji: 
-# React ![React](https://d2eip9sf3oo6c2.cloudfront.net/tags/images/000/000/026/square_256/react.png) 
-# Apache Cordova ![Apache Cordova](https://pbs.twimg.com/profile_images/1769287743/cordova_256.png)
+# [React](https://reactjs.org) [![React](https://d2eip9sf3oo6c2.cloudfront.net/tags/images/000/000/026/square_256/react.png)](https://reactjs.org)
+# [Apache Cordova](https://cordova.apache.org) [![Apache Cordova](https://pbs.twimg.com/profile_images/1769287743/cordova_256.png)](https://cordova.apache.org)
 
 ### Narzędzia użyte do zarządzania projektem: [Trello](https://trello.com/b/AFdwetRw/taskplaner-lista-zadań), [Github](https://github.com/s194506/BAITaskPlanner/projects/1)
 ### Prototyp aplikacji: <https://marvelapp.com/bg953ib/screen/56921859>
