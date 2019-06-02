@@ -208,7 +208,7 @@ export default withRouter(class FolderViewPage extends React.Component {
 
                 if (this.state.isSearchActive) {
                   if (!this.state.searchQuery) return;
-                  if (!task.text.includes(this.state.searchQuery)) return;
+                  if (!task.text.toLowerCase().includes(this.state.searchQuery.toLowerCase())) return;
                 }
 
 

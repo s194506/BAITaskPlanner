@@ -126,7 +126,7 @@ export default class FolderListPage extends React.Component {
                   this.state.folders.map( (folder) => {
                     if (this.state.isSearchActive) {
                       if (!this.state.searchQuery) return;
-                      if (!folder.name.includes(this.state.searchQuery)) return;
+                      if (!folder.name.toLowerCase().includes(this.state.searchQuery.toLowerCase())) return;
                     }
 
                     return (
