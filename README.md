@@ -29,6 +29,13 @@
 ### [Diagram UML](https://www.draw.io/?lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&title=polska%20wersja#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1euKm-pQtpW_KGVxQYJKmmFJs1mCwmcza%26export%3Ddownload)
 ### Repozytorium projektu: <https://github.com/s194506/BAITaskPlanner>
 
+### Przykładowe zrzuty ekranów aplikacji
+
+![Zrzut1](https://github.com/s194506/BAITaskPlanner/blob/master/foto_app/image_4.png?raw=true)
+![Zrzut2](https://github.com/s194506/BAITaskPlanner/blob/master/foto_app/image_2.png?raw=true)
+![Zrzut3](https://github.com/s194506/BAITaskPlanner/blob/master/foto_app/image_3.png?raw=true)
+![Zrzut4](https://github.com/s194506/BAITaskPlanner/blob/master/foto_app/image_1.png?raw=true)
+
 ### Skład grupy
 - Matsiushyn Dzianis 192084 WZISS2-1212
 - Nicieja Radosław 194086 WZISS2-1211
