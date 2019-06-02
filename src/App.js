@@ -29,7 +29,7 @@ export default class App extends React.Component {
   render() {
     // gotta wait until firebase calls onAuthStateChanged the first time
     // until then dont render any app pages
-    if (!this.state.isAuthReady) return <div>Wait a sec...</div>
+    if (!this.state.isAuthReady) return <div className='text-center py-5 text-secondary'>Wait a sec...</div>
 
     if (!firebase.auth().currentUser) {
       return (
