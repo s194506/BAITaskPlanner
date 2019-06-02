@@ -9,6 +9,7 @@ import FolderViewPage from './FolderViewPage';
 import ChatPage from './ChatPage';
 import firebase from 'firebase';
 import EditFolderPage from './EditFolderPage';
+import EditTaskPage from './EditTaskPage';
 
 export default class App extends React.Component {
   state = { 
@@ -43,6 +44,7 @@ export default class App extends React.Component {
       return (
         <Switch>
           <Route path='/folders/create' component={CreateFolderPage}/>
+          <Route path='/folders/:folderId/tasks/:taskId' component={EditTaskPage}/>
           <Route path='/folders/:folderId/chat' component={ChatPage}/>
           <Route path='/folders/:folderId/edit' component={EditFolderPage}/>
           <Route path='/folders/:folderId/tasks' component={FolderViewPage}/>
