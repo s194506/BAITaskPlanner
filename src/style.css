@@ -79,11 +79,11 @@ html, body {
 }
 
 .my-list {
-  padding:0 10px;
+  padding:0 5px;
 }
 
 .my-list > li {
-  padding:10px 10px;
+  padding:10px 5px;
   display:flex;
   align-items: center;
   
@@ -125,4 +125,27 @@ html, body {
 }
 .others-attachments {
   background: rgb(180, 235, 255);
+}
+
+
+
+.custom-checkbox {
+
+}
+
+.custom-checkbox > input {
+  display:none;
+  margin:0;
+}
+
+.custom-checkbox > input:not(:checked) ~ .custom-checkbox-checked {
+  display:none;
+}
+
+.custom-checkbox > input:checked ~ .custom-checkbox-not-checked {
+  display:none;
+}
+
+.strike {
+  text-decoration: line-through;
 }

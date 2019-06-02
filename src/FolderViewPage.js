@@ -3,7 +3,8 @@ import { Link, withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 
 import chatSVG from './img/chat.svg';
-import checkedSVG from './img/checked.svg';
+import checkOutlineSVG from './img/check-outline.svg';
+import checkFilledSVG from './img/check-filled.svg';
 
 
 import starOutlineSVG from './img/star-outline.svg';
@@ -146,13 +147,14 @@ export default withRouter(class FolderViewPage extends React.Component {
             <div className="input-group p-1">
               <input className='form-control' ref='newTaskText' disabled={this.state.isFetching}/>
               <div className="input-group-append">
-                <label className='input-group-text'>
-                  <input ref='newTaskIsFavorite' type='checkbox' disabled={this.state.isFetching}/>
-                  star
-                </label>
+                <button className='btn btn-success text-bold' disabled={this.state.isFetching}><b>+</b></button>
               </div>
               <div className="input-group-append">
-                <button className='btn btn-success text-bold' disabled={this.state.isFetching}><b>+</b></button>
+                <label className=' custom-checkbox mx-2 my-1'>
+                  <input ref='newTaskIsFavorite' type='checkbox' disabled={this.state.isFetching}/>
+                  <img src={starOutlineSVG} className='custom-checkbox-not-checked' height={25}/>
+                  <img src={starFilledSVG} className='custom-checkbox-checked' height={25}/>
+                </label>
               </div>
             </div>
             {
@@ -168,10 +170,19 @@ export default withRouter(class FolderViewPage extends React.Component {
               this.state.tasks.map( (task) => {
                 if (!this.state.showDone && task.isDone) return false;
 
+                var textClassName = task.isDone ? 'strike text-muted' : '';
+
                 return (
                   <li className='d-flex flex-row align-items-center'>
-                    <input className='mr-3' type='checkbox' onClick={this.toggleTaskDone.bind(this, task.id)} checked={task.isDone}/>
-                    <span className='list-item-content'>{task.text}</span>
+                    <img 
+                      className='mr-3 my-1'
+                      onClick={this.toggleTaskDone.bind(this, task.id)} 
+                      width={25} 
+                      src={task.isDone ? checkFilledSVG : checkOutlineSVG}
+                      />
+                    
+                    <span className={'list-item-content '+textClassName}>{task.text}</span>
+                    
                     <img 
                       className='align-self-right'
                       onClick={this.toggleTaskFavorite.bind(this, task.id)} 
