@@ -149,3 +149,9 @@ html, body {
 .strike {
   text-decoration: line-through;
 }
+
+.logo {
+  max-width: 50vw;
+  max-height: 50vh;
+  margin-bottom:20px;
+}

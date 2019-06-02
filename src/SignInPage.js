@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
+import logoPNG from './img/logo.png';
+
+
 export default class SignInPage extends React.Component {
   state = {
     isFetching: false,
@@ -69,8 +72,12 @@ export default class SignInPage extends React.Component {
           Sign In
         </div>
         <div class="content">
-          <br/>
-          <form className='mb-5' onSubmit={this.onFormSubmit.bind(this)}>
+          
+          <div class="text-center">
+            <img src={logoPNG} className='logo'/>
+          </div>
+
+          <form className='mb-3' onSubmit={this.onFormSubmit.bind(this)}>
             <div class="form-group">
               <label for="">Email: </label>
               <input className='form-control' ref='emailInput'/>
@@ -101,7 +108,7 @@ export default class SignInPage extends React.Component {
             <button className='btn btn-danger' onClick={this.googleClick.bind(this)}>Sign in with Google</button>
           </div>
   
-          <div className='text-center py-2'>OR</div>
+          <div className='text-center py-1'>OR</div>
           
           <Link to='/signup' className='btn btn-block btn-outline-secondary'>Register new account</Link>
 
