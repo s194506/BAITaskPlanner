@@ -3,6 +3,8 @@ import { Link, Redirect, withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 import UserToggler from './UserToggler';
 
+import trashCanSVG from './img/trash-can.svg';
+
 export default withRouter(class EditFolderPage extends React.Component {
   state = {
     isFetching: false,
@@ -45,6 +47,20 @@ export default withRouter(class EditFolderPage extends React.Component {
     })
   }
 
+  
+  onRemoveFolderClick(e) {
+    e.preventDefault();
+
+    var folder = this.state.folder;
+
+    this.setState({isFetching: true, error: ''});
+    firebase.firestore().collection('folders').doc(folder.id).delete().then(() => {
+      this.setState({isFetching:false, error:'', doRedirect: true});
+    }).catch((reason) => {
+      this.setState({isFetching:false, error:reason.message})
+    })
+  }
+
   onUserToggle(uid) {
     var folder = this.state.folder;
     if (folder.collaborators.includes(uid)) {
@@ -66,6 +82,12 @@ export default withRouter(class EditFolderPage extends React.Component {
             <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
           </div>
           <span className='top-bar-center-elements'>Edit {this.props.match.params['folderId']}</span>
+          
+          <div className="top-bar-right-elements">
+            <button className='btn btn-sm btn-danger' onClick={this.onRemoveFolderClick.bind(this)}> 
+              <img src={trashCanSVG} height={15}/>
+            </button>
+          </div>
         </div>
 
         <div className='content'>
