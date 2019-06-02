@@ -15,6 +15,17 @@ export default class App extends React.Component {
     isAuthReady: false 
   }
 
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(() => {
+      if (!this.state.isAuthReady) {
+        this.setState({isAuthReady:true})
+      }
+
+      this.forceUpdate();
+    });
+  }
+
+
   render() {
     // gotta wait until firebase calls onAuthStateChanged the first time
     // until then dont render any app pages
