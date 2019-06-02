@@ -28,9 +28,8 @@ export default withRouter(class FolderViewPage extends React.Component {
 
     isReminderEditing: false,
     isNoteEditing: false,
-
-    
     isPersonEditing: false,
+    newPersonList:[],
 
     readyState: 0,
 
@@ -177,33 +176,42 @@ export default withRouter(class FolderViewPage extends React.Component {
   
   /****************/
   onAddPersonClick() {
-    this.setState({isPersonEditing: true})
+    this.setState({isPersonEditing: true, newPersonList:this.state.task.persons || []})
   }
 
 
-  onPersonChosen(newPersonUID) {
+  onPersonsSubmit() {
 
     this.setState({isFetching: true, error:''});
     firebase.firestore().doc('folders/'+this.props.match.params['folderId']+'/tasks/'+this.props.match.params['taskId'])
-    .update( { person: newPersonUID } ).then( () => {
-      this.setState({isFetching: false, error:'', isPersonEditing: false});
+    .update( { persons: this.state.newPersonList } ).then( () => {
+      this.setState({isFetching: false, error:'', isPersonEditing: false, newPersonList:[]});
     }).catch( reason => {
       this.setState({isFetching: false, error:reason.message});
     })
   }
 
-  onRemovePersonClick() {
+  // onRemovePersonClick() {
     
-    this.setState({isFetching: true, error:''});
-    firebase.firestore().doc('folders/'+this.props.match.params['folderId']+'/tasks/'+this.props.match.params['taskId'])
-    .update( { person: null } ).then( () => {
-      this.setState({isFetching: false, error:''});
-    }).catch( reason => {
-      this.setState({isFetching: false, error:reason.message});
-    })
+  //   this.setState({isFetching: true, error:''});
+  //   firebase.firestore().doc('folders/'+this.props.match.params['folderId']+'/tasks/'+this.props.match.params['taskId'])
+  //   .update( { person: null } ).then( () => {
+  //     this.setState({isFetching: false, error:''});
+  //   }).catch( reason => {
+  //     this.setState({isFetching: false, error:reason.message});
+  //   })
+  // }
+
+
+  onPersonToggle(uid) {
+    var persons = this.state.newPersonList;
+    if (persons.includes(uid)) {
+      persons.splice(persons.indexOf(uid),1)
+    } else {
+      persons.push(uid)
+    }
+    this.setState({newPersonList:persons})
   }
-
-
 
   userFilter(user) {
     return this.state.folder.collaborators.includes(user.uid) || this.state.folder.owner === user.uid;
@@ -287,11 +295,22 @@ export default withRouter(class FolderViewPage extends React.Component {
                     <img src={personSVG} width={35} className='mr-3'/>
                     {
                       this.state.isPersonEditing
-                      ? <UserToggler userFilterCallback={this.userFilter.bind(this)} checkedUsersList={[]} onToggle={this.onPersonChosen.bind(this)}/>
-                      : this.state.task.person
+                      ? <div>
+                          <UserToggler userFilterCallback={this.userFilter.bind(this)} checkedUsersList={this.state.newPersonList} onToggle={this.onPersonToggle.bind(this)}/>
+                          <button className='btn btn-block btn-primary' onClick={this.onPersonsSubmit.bind(this)}>Save</button>
+                        </div>
+                      : this.state.task.persons && this.state.task.persons.length > 0
                         ? <span>
-                            <span>{this.state.users.find(user => user.uid === this.state.task.person).displayName}</span>
-                            <span className='btn btn-sm btn-outline-danger ml-2' onClick={this.onRemovePersonClick.bind(this)}>X</span>
+                            <span className='list-item-content'>
+                              {
+                                this.state.task.persons && this.state.task.persons.map(uid => 
+                                  <div className='my-1'>
+                                    {this.state.users.find(user => user.uid === uid).displayName}
+                                  </div>
+                                )
+                              }
+                            </span>
+                            <span className='btn btn-sm btn-outline-danger ml-2' onClick={this.onAddPersonClick.bind(this)}>edit</span>
                           </span>
                         : <span className='list-item-content' onClick={this.onAddPersonClick.bind(this)}>
                             Add a person

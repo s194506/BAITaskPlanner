@@ -219,7 +219,7 @@ export default withRouter(class FolderViewPage extends React.Component {
             {
               this.state.tasks.map( (task) => {
                 if (!this.state.showDone && task.isDone) return false;
-                if (this.state.onlyOwn && task.person !== firebase.auth().currentUser.uid) return false
+                if (this.state.onlyOwn && (!task.persons || !task.persons.includes(firebase.auth().currentUser.uid) ) ) return false
 
                 if (this.state.isSearchActive) {
                   if (!this.state.searchQuery) return;
