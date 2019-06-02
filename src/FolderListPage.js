@@ -4,12 +4,15 @@ import firebase from 'firebase';
 
 import plusSVG from './img/plus.svg';
 import folderSVG from './img/folder.svg';
+import searchSVG from './img/search.svg';
 
 export default class FolderListPage extends React.Component {
   state = {
     isFetching: false,
     error: '',
-    folders: []
+    folders: [],
+    isSearchActive: false,
+    searchQuery: ''
   }
 
   realtimeUnsibscribeOwn = null
@@ -62,24 +65,58 @@ export default class FolderListPage extends React.Component {
     firebase.auth().signOut()
   }
 
+  showSearch() {
+    this.setState({isSearchActive:true, searchQuery:''});
+  }
+  hideSearch() {
+    this.setState({isSearchActive:false, searchQuery:''});
+  }
+
+  onSearchQueryChange(e) {
+    var newSearchQuery = this.refs['searchInput'].value;
+    this.setState({searchQuery: newSearchQuery});
+  }
+
   render() {
     const currentUser = firebase.auth().currentUser;
     // console.log('currentUser.providerData',currentUser && currentUser.providerData)
 
     return (
       <div className='page'>
-        <div className='top-bar'>
-            <div class="top-bar-left-elements">
-              <button className='btn btn-sm btn-outline-light ' onClick={this.signout}>Sign out</button>
+        {
+          this.state.isSearchActive
+          ? (
+            <div className='top-bar'>
+              <div class="input-group">
+                <input className='form-control' ref='searchInput' onChange={this.onSearchQueryChange.bind(this)}/>
+                <div className='input-group-append'>
+                  <button className='btn btn-outline-light' onClick={this.hideSearch.bind(this)}>X</button>
+                </div>
+              </div>
             </div>
-            <div className='top-bar-center-elements'>
-              {
-                currentUser 
-                ? currentUser.displayName || currentUser.email
-                : 'Not authorized!'
-              }
+          )
+          : (
+            <div className='top-bar'>
+              <div class="top-bar-left-elements">
+                <button className='btn btn-sm btn-outline-light ' onClick={this.signout}>Sign out</button>
+              </div>
+              <div className='top-bar-center-elements'>
+                {
+                  currentUser 
+                  ? currentUser.displayName || currentUser.email
+                  : 'Not authorized!'
+                }
+              </div>
+              <div class="top-bar-right-elements">
+                <button className='btn btn-sm' onClick={this.showSearch.bind(this)}>
+                  <img src={searchSVG} height={20}/>
+                </button>
+              </div>
             </div>
-        </div>
+          )
+        }
+
+
         <div className='content with-bottom-button'>
           {
             this.state.folders.length === 0 
@@ -87,6 +124,11 @@ export default class FolderListPage extends React.Component {
             : <ul className='list-unstyled my-list'>
                 {
                   this.state.folders.map( (folder) => {
+                    if (this.state.isSearchActive) {
+                      if (!this.state.searchQuery) return;
+                      if (!folder.name.includes(this.state.searchQuery)) return;
+                    }
+
                     return (
                       <li>
                         <img height={30} src={folderSVG}/>

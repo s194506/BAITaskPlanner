@@ -10,12 +10,16 @@ import checkFilledSVG from './img/check-filled.svg';
 import starOutlineSVG from './img/star-outline.svg';
 import starFilledSVG from './img/star-filled.svg';
 
+import searchSVG from './img/search.svg';
+
 
 export default withRouter(class FolderViewPage extends React.Component {
   state = {
     showDone: false,
     sortType: 'date', // date, favorite
-    tasks: []
+    tasks: [],
+    isSearchActive: false,
+    searchQuery: ''
   }
 
   componentDidMount() {
@@ -128,21 +132,51 @@ export default withRouter(class FolderViewPage extends React.Component {
     })
   }
 
+  showSearch() {
+    this.setState({isSearchActive:true, searchQuery:''});
+  }
+  hideSearch() {
+    this.setState({isSearchActive:false, searchQuery:''});
+  }
+
+  onSearchQueryChange(e) {
+    var newSearchQuery = this.refs['searchInput'].value;
+    this.setState({searchQuery: newSearchQuery});
+  }
+
   render() {
     return (
       <div className='page'>
-        <div className='top-bar'>
-          <div className="top-bar-left-elements">
-            <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
-          </div>
-          <span className='top-bar-center-elements'>{this.props.match.params['folderId']}</span>
-          <div className="top-bar-right-elements">
-            <Link to={'/folders/'+this.props.match.params.folderId+'/chat'}  className='btn btn-primary'>
-              <img height={20} src={chatSVG}/>
-            </Link>
-          </div>
-        </div>
-        <div>
+        {
+          this.state.isSearchActive
+          ? (
+            <div className='top-bar'>
+              <div class="input-group">
+                <input className='form-control' ref='searchInput' onChange={this.onSearchQueryChange.bind(this)}/>
+                <div className='input-group-append'>
+                  <button className='btn btn-outline-light' onClick={this.hideSearch.bind(this)}>X</button>
+                </div>
+              </div>
+            </div>
+          )
+          : (
+            <div className='top-bar'>
+              <div className="top-bar-left-elements">
+                <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
+              </div>
+              <span className='top-bar-center-elements'>{this.props.match.params['folderId']}</span>
+              <div className="top-bar-right-elements">
+                <button className='btn btn-sm' onClick={this.showSearch.bind(this)}>
+                  <img src={searchSVG} height={20}/>
+                </button>
+                <Link to={'/folders/'+this.props.match.params.folderId+'/chat'}  className='btn btn-primary'>
+                  <img height={20} src={chatSVG}/>
+                </Link>
+              </div>
+            </div>
+          )
+        }
+        <div style={{display:this.state.isSearchActive ? 'none' : ''}}>
           <form onSubmit={this.onTaskAdd.bind(this)}>
             <div className="input-group p-1">
               <input className='form-control' ref='newTaskText' disabled={this.state.isFetching}/>
@@ -164,11 +198,19 @@ export default withRouter(class FolderViewPage extends React.Component {
             }
           </form>
         </div>
+
+
         <div className='content'>
           <ul className='list-unstyled my-list'>
             {
               this.state.tasks.map( (task) => {
                 if (!this.state.showDone && task.isDone) return false;
+
+                if (this.state.isSearchActive) {
+                  if (!this.state.searchQuery) return;
+                  if (!task.text.includes(this.state.searchQuery)) return;
+                }
+
 
                 var textClassName = task.isDone ? 'strike text-muted' : '';
 
@@ -182,7 +224,7 @@ export default withRouter(class FolderViewPage extends React.Component {
                       />
                     
                     <span className={'list-item-content '+textClassName}>{task.text}</span>
-                    
+
                     <img 
                       className='align-self-right'
                       onClick={this.toggleTaskFavorite.bind(this, task.id)} 
