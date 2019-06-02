@@ -18,6 +18,7 @@ export default withRouter(class FolderViewPage extends React.Component {
     folder:null,
 
     showDone: false,
+    onlyOwn: false,
     sortType: 'date', // date, favorite
     tasks: [],
     isSearchActive: false,
@@ -218,6 +219,7 @@ export default withRouter(class FolderViewPage extends React.Component {
             {
               this.state.tasks.map( (task) => {
                 if (!this.state.showDone && task.isDone) return false;
+                if (this.state.onlyOwn && task.person !== firebase.auth().currentUser.uid) return false
 
                 if (this.state.isSearchActive) {
                   if (!this.state.searchQuery) return;
@@ -258,6 +260,9 @@ export default withRouter(class FolderViewPage extends React.Component {
         </div>
         
         <div className='px-1'>
+          <button className='btn btn-sm btn-block btn-outline-secondary my-1 ' onClick={()=>this.setState({onlyOwn: !this.state.onlyOwn})}>
+            {this.state.onlyOwn ? 'Show all' : 'Show only mine'}
+          </button>
           <button className='btn btn-sm btn-block btn-outline-secondary my-1 ' onClick={()=>this.setState({showDone: !this.state.showDone})}>
             {this.state.showDone ? 'Hide done' : 'Show done'}
           </button>

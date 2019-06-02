@@ -7,16 +7,20 @@ import ElapsedTime from './ElapsedTime';
 
 import calendarSVG from './img/calendar.svg';
 import noteSVG from './img/note.svg';
+import personSVG from './img/person.svg';
 
 import stopwatchSVG from './img/stopwatch.svg';
 import stopSVG from './img/stop.svg';
 import playSVG from './img/play.svg';
 
 import trashCanSVG from './img/trash-can.svg';
+import UserToggler from './UserToggler';
 
 
 export default withRouter(class FolderViewPage extends React.Component {
   state = {
+    users: [],
+
     isFetching: false,
     error:'',
 
@@ -26,6 +30,10 @@ export default withRouter(class FolderViewPage extends React.Component {
     isNoteEditing: false,
 
     
+    isPersonEditing: false,
+
+    readyState: 0,
+
     toRedirect: false
   }
 
@@ -35,12 +43,20 @@ export default withRouter(class FolderViewPage extends React.Component {
     var taskId = this.props.match.params['taskId'];
 
     this.setState({isFetching: true, error:''})
-    firebase.firestore().doc('folders/'+folderId+'/tasks/'+taskId)
-    .get().then( docSnapshot => {
-      var task = docSnapshot.data();
-      task.id = docSnapshot.id;
+    Promise.all([
+      firebase.firestore().doc('folders/'+folderId).get(),
+      firebase.firestore().doc('folders/'+folderId+'/tasks/'+taskId).get(),
+      firebase.firestore().collection('users').get(),
+    ]).then( ([folderSnapshot, taskSnapshot, usersCollection]) => {
+      var folder = folderSnapshot.data();
+      folder.id = folderSnapshot.id;
+      
+      var task = taskSnapshot.data();
+      task.id = taskSnapshot.id;
 
-      this.setState({isFetching:false, error:'', task: task});
+      var users = usersCollection.docs.map(userSnapshot => userSnapshot.data())
+
+      this.setState({isFetching:false, error:'', task: task, folder:folder, users:users});
     }).catch((reason) => {
       this.setState({isFetching:false, error: reason.message})
     })
@@ -157,6 +173,42 @@ export default withRouter(class FolderViewPage extends React.Component {
     })
   }
 
+
+  
+  /****************/
+  onAddPersonClick() {
+    this.setState({isPersonEditing: true})
+  }
+
+
+  onPersonChosen(newPersonUID) {
+
+    this.setState({isFetching: true, error:''});
+    firebase.firestore().doc('folders/'+this.props.match.params['folderId']+'/tasks/'+this.props.match.params['taskId'])
+    .update( { person: newPersonUID } ).then( () => {
+      this.setState({isFetching: false, error:'', isPersonEditing: false});
+    }).catch( reason => {
+      this.setState({isFetching: false, error:reason.message});
+    })
+  }
+
+  onRemovePersonClick() {
+    
+    this.setState({isFetching: true, error:''});
+    firebase.firestore().doc('folders/'+this.props.match.params['folderId']+'/tasks/'+this.props.match.params['taskId'])
+    .update( { person: null } ).then( () => {
+      this.setState({isFetching: false, error:''});
+    }).catch( reason => {
+      this.setState({isFetching: false, error:reason.message});
+    })
+  }
+
+
+
+  userFilter(user) {
+    return this.state.folder.collaborators.includes(user.uid) || this.state.folder.owner === user.uid;
+  }
+
   render() {
     var folderId = this.props.match.params['folderId'];
     var taskId = this.props.match.params['taskId'];
@@ -183,7 +235,7 @@ export default withRouter(class FolderViewPage extends React.Component {
 
         <div className='content'>
           {
-            !this.state.task
+            !this.state.task || !this.state.folder
             ? <div>Waiting...</div>
             : (
               <div>
@@ -227,6 +279,22 @@ export default withRouter(class FolderViewPage extends React.Component {
                           </span>
                         : <span className='list-item-content' onClick={this.onAddNoteClick.bind(this)}>
                             Add a note
+                          </span>
+                    }
+                    
+                  </li>
+                  <li>
+                    <img src={personSVG} width={35} className='mr-3'/>
+                    {
+                      this.state.isPersonEditing
+                      ? <UserToggler userFilterCallback={this.userFilter.bind(this)} checkedUsersList={[]} onToggle={this.onPersonChosen.bind(this)}/>
+                      : this.state.task.person
+                        ? <span>
+                            <span>{this.state.users.find(user => user.uid === this.state.task.person).displayName}</span>
+                            <span className='btn btn-sm btn-outline-danger ml-2' onClick={this.onRemovePersonClick.bind(this)}>X</span>
+                          </span>
+                        : <span className='list-item-content' onClick={this.onAddPersonClick.bind(this)}>
+                            Add a person
                           </span>
                     }
                     
