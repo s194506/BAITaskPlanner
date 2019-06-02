@@ -15,6 +15,8 @@ import searchSVG from './img/search.svg';
 
 export default withRouter(class FolderViewPage extends React.Component {
   state = {
+    folder:null,
+
     showDone: false,
     sortType: 'date', // date, favorite
     tasks: [],
@@ -23,6 +25,17 @@ export default withRouter(class FolderViewPage extends React.Component {
   }
 
   componentDidMount() {
+    
+    // this one is needed to display folder's name at the top
+    firebase.firestore().collection('folders').doc(this.props.match.params['folderId'])
+    .get().then( docSnapshot => {
+      var folder = docSnapshot.data();
+      folder.id = docSnapshot.id;
+
+      this.setState({ folder: folder});
+    })
+
+
     this.realtimeUnsubscribe = 
     firebase.firestore().collection('folders/'+this.props.match.params['folderId']+'/tasks')
     .onSnapshot((next) => {
@@ -164,7 +177,7 @@ export default withRouter(class FolderViewPage extends React.Component {
               <div className="top-bar-left-elements">
                 <Link to='/folders' className='btn btn-outline-light'>{'<'}</Link>
               </div>
-              <span className='top-bar-center-elements'>{this.props.match.params['folderId']}</span>
+              <span className='top-bar-center-elements'>{this.state.folder ? this.state.folder.name : ''}</span>
               <div className="top-bar-right-elements">
                 <button className='btn btn-sm' onClick={this.showSearch.bind(this)}>
                   <img src={searchSVG} height={20}/>

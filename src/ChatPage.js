@@ -7,6 +7,8 @@ import cameraSVG from './img/camera.svg';
 export default withRouter(class ChatPage extends React.Component {
 
   state = {
+    folder: null,
+
     isFetching: false,
     error:'',
     imagesToSend:[],
@@ -18,6 +20,16 @@ export default withRouter(class ChatPage extends React.Component {
   realtimeUnsubscribe = null
 
   componentDidMount() {
+    // this one is needed to display folder's name at the top
+    firebase.firestore().collection('folders').doc(this.props.match.params['folderId'])
+    .get().then( docSnapshot => {
+      var folder = docSnapshot.data();
+      folder.id = docSnapshot.id;
+
+      this.setState({ folder: folder});
+    })
+
+
     this.setState({isFetching:true, error:''});
     firebase.firestore().collection('users').get().then(result => {
       var users = result.docs.map(docSnapshot => docSnapshot.data());
@@ -125,7 +137,7 @@ export default withRouter(class ChatPage extends React.Component {
             <Link className='btn btn-outline-light' to={'/folders/'+folderId+'/tasks'}>{'<'}</Link>
           </div>
           <div className='top-bar-center-elements'>
-            Chat for folder ??
+            Chat for '{this.state.folder ? this.state.folder.name : ''}'
           </div>
         </div>
         
