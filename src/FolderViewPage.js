@@ -223,7 +223,12 @@ export default withRouter(class FolderViewPage extends React.Component {
                       src={task.isDone ? checkFilledSVG : checkOutlineSVG}
                       />
                     
-                    <span className={'list-item-content '+textClassName}>{task.text}</span>
+                    <Link 
+                      className={'list-item-content '+textClassName} 
+                      to={'/folders/'+this.props.match.params['folderId']+'/tasks/'+task.id}
+                      >
+                      {task.text}
+                    </Link>
 
                     <img 
                       className='align-self-right'
